@@ -3,12 +3,7 @@
 
 An intelligent web application that uses deep learning to identify and diagnose diseases in palm trees. Built with TensorFlow/Keras and Flask, this system helps farmers and agricultural professionals quickly detect palm diseases from images.
 
-```
-   🌴 PalmCare AI 🌴
-   ━━━━━━━━━━━━━━━━━━
-   Smart Palm Disease Detection
-   Powered by Deep Learning
-```
+
 
 ## 📋 Table of Contents
 - [Features](#features)
