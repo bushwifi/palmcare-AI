@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PalmCare AI - Disease Detection System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #16a34a;
+            --primary-dark: #15803d;
+            --secondary: #059669;
+            --danger: #dc2626;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            letter-spacing: -0.025em;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--gray-900);
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--gray-300);
+            border-radius: 8px;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--gray-50);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .upload-zone.active {
+            border-color: var(--primary);
+            background: #f0fdf4;
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            opacity: 0.4;
+        }
+
+        .upload-text {
+            font-size: 0.95rem;
+            color: var(--gray-600);
+        }
+
+        .upload-text strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .upload-hint {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-top: 0.5rem;
+        }
+
+        .preview-box {
+            margin-top: 1.5rem;
+            display: none;
+            position: relative;
+        }
+
+        .preview-img {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .remove-img {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+        }
+
+        .btn:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner.active {
+            display: block;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-disease {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .tag-high {
+            background: rgba(220, 38, 38, 0.15);
+            color: #991b1b;
+        }
+
+        .tag-medium {
+            background: rgba(245, 158, 11, 0.15);
+            color: #92400e;
+        }
+
+        .section {
+            margin: 1.5rem 0;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--gray-900);
+        }
+
+        .section-content {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .list-item {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .list-item:before {
+            content: "•";
+            position: absolute;
+            left: 0.5rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .chart {
+            margin-top: 1rem;
+        }
+
+        .chart-item {
+            margin-bottom: 1rem;
+        }
+
+        .chart-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .chart-label-name {
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        .chart-label-value {
+            color: var(--gray-600);
+        }
+
+        .chart-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+                PalmCare AI
+            </div>
+            <ul class="nav-links">
+                <li><a href="#detection">Detection</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Palm Tree Disease Detection</h1>
+            <p>Early detection and diagnosis of palm tree diseases using computer vision and machine learning</p>
+        </div>
+
+        <div class="grid">
+            <div class="panel">
+                <h2 class="panel-title">Upload Image</h2>
+                
+                <div class="upload-zone" id="dropZone">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p class="upload-text">
+                        <strong>Click to upload</strong> or drag and drop
+                    </p>
+                    <p class="upload-hint">PNG, JPG or JPEG (MAX. 10MB)</p>
+                </div>
+
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+                <div class="preview-box" id="previewBox">
+                    <img id="previewImg" class="preview-img" alt="Preview">
+                    <button class="remove-img" id="removeBtn">&times;</button>
+                </div>
+
+                <button class="btn btn-primary" id="analyzeBtn" disabled>
+                    Run Analysis
+                </button>
+
+                <div class="spinner" id="spinner">
+                    <div class="loader"></div>
+                    <p style="color: var(--gray-600);">Analyzing image...</p>
+                </div>
+
+                <div class="alert alert-error" id="errorAlert"></div>
+            </div>
+
+            <div class="panel results" id="resultsPanel">
+                <h2 class="panel-title">Diagnosis</h2>
+                
+                <div class="result-header" id="resultHeader">
+                    <div class="result-disease" id="diseaseName">—</div>
+                    <div class="result-meta">
+                        <span>Confidence: <strong id="confidence">0%</strong></span>
+                        <span class="tag" id="severityTag">—</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">Overview</h3>
+                    <p class="section-content" id="description">—</p>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">Common Causes</h3>
+                    <ul class="list" id="causesList"></ul>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">Treatment Recommendations</h3>
+                    <ul class="list" id="treatmentList"></ul>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">Confidence Breakdown</h3>
+                    <div class="chart" id="chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 PalmCare AI. Developed for agricultural disease management.</p>
+    </footer>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const previewBox = document.getElementById('previewBox');
+        const previewImg = document.getElementById('previewImg');
+        const removeBtn = document.getElementById('removeBtn');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const spinner = document.getElementById('spinner');
+        const errorAlert = document.getElementById('errorAlert');
+        const resultsPanel = document.getElementById('resultsPanel');
+
+        let currentFile = null;
+
+        dropZone.onclick = () => fileInput.click();
+
+        dropZone.ondragover = (e) => {
+            e.preventDefault();
+            dropZone.classList.add('active');
+        };
+
+        dropZone.ondragleave = () => {
+            dropZone.classList.remove('active');
+        };
+
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        };
+
+        fileInput.onchange = (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        };
+
+        removeBtn.onclick = () => {
+            currentFile = null;
+            previewBox.style.display = 'none';
+            fileInput.value = '';
+            analyzeBtn.disabled = true;
+            resultsPanel.classList.remove('active');
+            errorAlert.classList.remove('active');
+        };
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Please upload a valid image file');
+                return;
+            }
+
+            currentFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewBox.style.display = 'block';
+                analyzeBtn.disabled = false;
+                resultsPanel.classList.remove('active');
+                errorAlert.classList.remove('active');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        analyzeBtn.onclick = async () => {
+            if (!currentFile) return;
+
+            const formData = new FormData();
+            formData.append('image', currentFile);
+
+            spinner.classList.add('active');
+            analyzeBtn.disabled = true;
+            errorAlert.classList.remove('active');
+
+            try {
+                const res = await fetch('/api/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showResults(data);
+                } else {
+                    showError(data.error || 'Analysis failed');
+                }
+            } catch (err) {
+                showError('Network error. Please try again.');
+            } finally {
+                spinner.classList.remove('active');
+                analyzeBtn.disabled = false;
+            }
+        };
+
+        function showResults(data) {
+            const { disease, confidence, all_predictions, details } = data;
+
+            document.getElementById('diseaseName').textContent = disease;
+            document.getElementById('confidence').textContent = (confidence * 100).toFixed(1) + '%';
+            
+            const tag = document.getElementById('severityTag');
+            tag.textContent = details.severity + ' Risk';
+            tag.className = 'tag tag-' + details.severity.toLowerCase();
+
+            const header = document.getElementById('resultHeader');
+            if (details.severity === 'High') {
+                header.style.background = 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)';
+            } else if (details.severity === 'Medium') {
+                header.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+            } else {
+                header.style.background = 'linear-gradient(135deg, #16a34a 0%, #059669 100%)';
+            }
+
+            document.getElementById('description').textContent = details.description || '—';
+
+            const causesList = document.getElementById('causesList');
+            causesList.innerHTML = '';
+            (details.causes || []).forEach(cause => {
+                const li = document.createElement('li');
+                li.className = 'list-item';
+                li.textContent = cause;
+                causesList.appendChild(li);
+            });
+
+            const treatmentList = document.getElementById('treatmentList');
+            treatmentList.innerHTML = '';
+            (details.treatment || []).forEach(treatment => {
+                const li = document.createElement('li');
+                li.className = 'list-item';
+                li.textContent = treatment;
+                treatmentList.appendChild(li);
+            });
+
+            const chart = document.getElementById('chart');
+            chart.innerHTML = '';
+            Object.entries(all_predictions)
+                .sort((a, b) => b[1] - a[1])
+                .forEach(([name, value]) => {
+                    const item = document.createElement('div');
+                    item.className = 'chart-item';
+                    item.innerHTML = `
+                        <div class="chart-label">
+                            <span class="chart-label-name">${name}</span>
+                            <span class="chart-label-value">${(value * 100).toFixed(1)}%</span>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-fill" style="width: ${value * 100}%"></div>
+                        </div>
+                    `;
+                    chart.appendChild(item);
+                });
+
+            resultsPanel.classList.add('active');
+            resultsPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showError(msg) {
+            errorAlert.textContent = msg;
+            errorAlert.classList.add('active');
+        }
+    </script>
+</body>
+</html>
