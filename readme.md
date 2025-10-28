@@ -3,22 +3,7 @@
 
 An intelligent web application that uses deep learning to identify and diagnose diseases in palm trees. Built with TensorFlow/Keras and Flask, this system helps farmers and agricultural professionals quickly detect palm diseases from images.
 
-
-
-## 📋 Table of Contents
-- [Features](#features)
-- [Disease Detection](#disease-detection)
-- [Technology Stack](#technology-stack)
-- [Installation](#installation)
-- [Usage](#usage)
-- [API Documentation](#api-documentation)
-- [Model Information](#model-information)
-- [Project Structure](#project-structure)
-- [Screenshots](#screenshots)
-- [Contributing](#contributing)
-- [License](#license)
-
-## ✨ Features
+##  Features
 
 - **🎯 Accurate Disease Detection**: Identifies 4 common palm diseases with high accuracy
 - **📸 Image Upload**: Support for PNG, JPG, and JPEG formats (up to 10MB)
